@@ -1,23 +1,30 @@
 {
-  "name": "quanta-selector-react",
-  "version": "1.0.0",
-  "license": "MIT",
-  "source": "./index.ts",
-  "main": "dist/main.js",
-  "module": "dist/module.js",
-  "scripts": {
-    "dev": "parcel watch",
-    "build": "parcel build"
-  },
-  "devDependencies": {
-    "@types/react": "^18.0.34",
-    "@types/react-dom": "^18.0.11",
-    "parcel": "^2.8.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "typescript": "^5.0.4"
-  },
-  "peerDependencies": {
-    "react": "^18.2.0"
-  }
+	"name": "quanta-selector-react",
+	"version": "1.0.0",
+	"license": "MIT",
+	"source": "./index.ts",
+	"main": "dist/main.js",
+	"module": "dist/module.js",
+	"scripts": {
+		"dev": "parcel watch",
+		"build": "parcel build"
+	},
+	"devDependencies": {
+		"@types/react": "^18.0.34",
+		"@types/react-dom": "^18.0.11",
+		"parcel": "^2.8.3",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"typescript": "^5.0.4"
+	},
+	"peerDependencies": {
+		"react": "^18.2.0"
+	},
+	"keywords": [
+		"quanta",
+		"quanta-selector",
+		"react"
+	],
+	"homepage": "https://github.com/Sigmyze/Quanta-React-Selector",
+	"private": false
 }
