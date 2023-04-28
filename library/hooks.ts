@@ -17,8 +17,20 @@ const useSetSelected = () => {
     return setSelected
 }
 
+const useQueryIndicators = () => {
+    const { queryIndicators } = useContext(SelectorContextData) as ISelectorWrapperState
+    return queryIndicators
+}
+
+const useAnalysis = () => {
+    const { analysis } = useContext(SelectorContextData) as ISelectorWrapperState
+    return analysis
+}
+
 export { 
     usePingMessage,
     useSetSchema,
-    useSetSelected 
+    useSetSelected,
+    useQueryIndicators,
+    useAnalysis 
 }

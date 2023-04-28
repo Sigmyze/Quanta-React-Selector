@@ -1,4 +1,6 @@
-import { IEmitSelectedMessage, IFrameMessage, IPingMessage, ISchemaItem, ISetSchemaMessage } from "../../../types"
+import { IEmitSelectedMessage, IFrameMessage, IPingMessage, IQueryIndicator, ISchemaItem, ISetSchemaMessage } from "../../../types"
+import { IQuantaQuery } from "../types"
+import { v4 } from 'uuid'
 
 const pingMessage = (sourceId: string) => {
     let frameMessage = {} as IFrameMessage
@@ -35,8 +37,42 @@ const setSelected = (id: string, data: any) => {
     window.top?.postMessage(JSON.stringify(frameMessage), '*')
 }
 
+const constructStringQuery = (field: string, value: string) => {
+    let query = {} as IQuantaQuery
+    query.fieldKey = field
+    query.fieldType = "string"
+    query.stringField = value
+
+    return query
+}
+
+const constructDateQuery = (field: string, value: number) => {
+    let query = {} as IQuantaQuery
+    query.fieldKey = field
+    query.fieldType = "date"
+    query.dateField = value
+
+    return query
+}
+
+const queryIndicators = (query: IQuantaQuery[]) => {
+    let frameMessage = {} as IFrameMessage
+    frameMessage.function = "query_indicator"
+
+    let queryData = {} as IQueryIndicator
+    queryData.requestId = v4()
+    queryData.query = query
+    frameMessage.data = JSON.stringify(queryData)
+
+    window.top?.postMessage(JSON.stringify(frameMessage), '*')
+    return queryData.requestId
+}
+
 export { 
     pingMessage,
     setSchema,
-    setSelected 
+    setSelected,
+    constructStringQuery,
+    constructDateQuery,
+    queryIndicators
 }

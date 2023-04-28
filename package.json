@@ -26,5 +26,9 @@
 		"react"
 	],
 	"homepage": "https://github.com/Sigmyze/Quanta-React-Selector",
-	"private": false
+	"private": false,
+	"dependencies": {
+		"@types/uuid": "^9.0.1",
+		"uuid": "^9.0.0"
+	}
 }
