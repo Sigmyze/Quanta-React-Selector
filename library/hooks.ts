@@ -22,6 +22,21 @@ const useQueryIndicators = () => {
     return queryIndicators
 }
 
+const useQueryIndicatorId = () => {
+    const { queryIndicatorId } = useContext(SelectorContextData) as ISelectorWrapperState
+    return queryIndicatorId
+}
+
+const useIndicatorsPaged = () => {
+    const { queryIndicatorsPaged } = useContext(SelectorContextData) as ISelectorWrapperState
+    return queryIndicatorsPaged
+}
+
+const useIndicatorsLength = () => {
+    const { queryIndicatorsLength } = useContext(SelectorContextData) as ISelectorWrapperState
+    return queryIndicatorsLength
+}
+
 const useAnalysis = () => {
     const { analysis } = useContext(SelectorContextData) as ISelectorWrapperState
     return analysis
@@ -32,5 +47,8 @@ export {
     useSetSchema,
     useSetSelected,
     useQueryIndicators,
-    useAnalysis 
+    useAnalysis,
+    useQueryIndicatorId,
+    useIndicatorsPaged,
+    useIndicatorsLength
 }

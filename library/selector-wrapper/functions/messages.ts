@@ -1,6 +1,16 @@
-import { IEmitSelectedMessage, IFrameMessage, IPingMessage, IQueryIndicator, ISchemaItem, ISetSchemaMessage } from "../../../types"
 import { IQuantaQuery } from "../types"
 import { v4 } from 'uuid'
+import { 
+    IEmitSelectedMessage, 
+    IFrameMessage, 
+    IPingMessage, 
+    IQueryIndicator, 
+    IQueryIndicatorId, 
+    IQueryIndicatorPage, 
+    IQueryPagedIndicators, 
+    ISchemaItem, 
+    ISetSchemaMessage 
+} from "../../../types"
 
 const pingMessage = (sourceId: string) => {
     let frameMessage = {} as IFrameMessage
@@ -68,11 +78,83 @@ const queryIndicators = (query: IQuantaQuery[]) => {
     return queryData.requestId
 }
 
+const queryIndicatorsPageFrame = (page: number, pageLength: number) => {
+    let frameMessage = {} as IFrameMessage
+    frameMessage.function = "query_indicator_page"
+
+    let queryData = {} as IQueryIndicatorPage
+    queryData.requestId = v4()
+    queryData.page = page
+    queryData.pageLength = pageLength
+    frameMessage.data = JSON.stringify(queryData)
+
+    window.top?.postMessage(JSON.stringify(frameMessage), '*')
+    return queryData.requestId
+}
+
+const queryIndicatorsLengthFrame = (query: IQuantaQuery[]) => {
+    let frameMessage = {} as IFrameMessage
+    frameMessage.function = "query_indicator_length"
+
+    let queryData = {} as IQueryIndicator
+    queryData.requestId = v4()
+    queryData.query = query
+    frameMessage.data = JSON.stringify(queryData)
+
+    window.top?.postMessage(JSON.stringify(frameMessage), '*')
+    return queryData.requestId
+}
+
+const indicatorsLengthFrame = () => {
+    let frameMessage = {} as IFrameMessage
+    frameMessage.function = "indicators_length"
+
+    let queryData = {} as IQueryIndicator
+    queryData.requestId = v4()
+    frameMessage.data = JSON.stringify(queryData)
+
+    window.top?.postMessage(JSON.stringify(frameMessage), '*')
+    return queryData.requestId
+}
+
+const pagedSelectedIndicatorsFrame = (query: IQuantaQuery[], page: number, pageLength: number) => {
+    let frameMessage = {} as IFrameMessage
+    frameMessage.function = "query_paged_indicators"
+
+    let queryData = {} as IQueryPagedIndicators
+    queryData.requestId = v4()
+    queryData.page = page
+    queryData.pageLength = pageLength
+    queryData.query = query
+    frameMessage.data = JSON.stringify(queryData)
+
+    window.top?.postMessage(JSON.stringify(frameMessage), '*')
+    return queryData.requestId
+}
+
+const queryFrameIndicatorsId = (indicatorId: string) => {
+    let frameMessage = {} as IFrameMessage
+    frameMessage.function = "query_indicator_by_id"
+
+    let queryData = {} as IQueryIndicatorId
+    queryData.requestId = v4()
+    queryData.indicatorId = indicatorId
+    frameMessage.data = JSON.stringify(queryData)
+
+    window.top?.postMessage(JSON.stringify(frameMessage), '*')
+    return queryData.requestId
+}
+
 export { 
     pingMessage,
     setSchema,
     setSelected,
     constructStringQuery,
     constructDateQuery,
-    queryIndicators
+    queryIndicators,
+    queryFrameIndicatorsId,
+    queryIndicatorsPageFrame,
+    pagedSelectedIndicatorsFrame,
+    queryIndicatorsLengthFrame,
+    indicatorsLengthFrame
 }

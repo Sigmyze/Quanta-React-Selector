@@ -22,7 +22,7 @@ interface IAnalyzedData {
     /**
      * value if type is string and is array
      */
-    stringArray?: string,
+    stringArray?: string[],
 
     /**
      * value if type is date and is not array

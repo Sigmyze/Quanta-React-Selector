@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react'
-import { IIndicatorResponse, IResolverResponse, ISelectorWrapperState } from '../../types'
+import { IResolverResponse, ISelectorWrapperState } from '../../types'
 import { useState } from 'react'
-import { pingMessage, queryIndicators, setSchema, setSelected } from './functions/messages'
-import { IIFrameMessage, IPipelineMessage, IQuantaIndicator, IQuantaQuery } from './types'
+import { pingMessage, setSchema, setSelected } from './functions/messages'
+import { IIFrameMessage, IPipelineMessage , IQuantaQuery } from './types'
 import { IAnalyzedData, IAnalyzedState, IResolver } from './types/state'
+import { queryIndicatorsId, queryIndicatorsLength, queryIndicatorsPage, queryIndicatorsWrapper } from './functions'
 
 const SelectorContextData = React.createContext<ISelectorWrapperState | null>(null)
 
@@ -86,35 +87,17 @@ const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {
     value.setSchema = setSchema
     value.setSelected = setSelected
 
-    value.queryIndicators = (query: IQuantaQuery[]) => {
-        const promise = new Promise<IQuantaIndicator[] | undefined>((resolve, reject) => {
-            let requestId = queryIndicators(query)
+    value.queryIndicators = (query: IQuantaQuery[]) => 
+        queryIndicatorsWrapper(query, resolvers, setResolvers)
 
-            const resolver = (val: string) => {
-                try {
-                    let indicatorResponse: IIndicatorResponse = JSON.parse(val)
-                    resolve(indicatorResponse.indicators)
-                } catch {
-                    console.debug("[Selector] Error Processing Indicator Response")
-                    resolve(undefined)
-                }
-            }
+    value.queryIndicatorId = (indicatorId: string) =>
+        queryIndicatorsId(indicatorId, resolvers, setResolvers)
 
-            setTimeout(() => {
-                console.debug("[Selector] Query Request Timed out")
-                resolve(undefined)
-            }, 1000 * 20)
+    value.queryIndicatorsPaged = (page: number, pageLength: number, query?: IQuantaQuery[]) =>
+        queryIndicatorsPage(page, pageLength, query, resolvers, setResolvers)
 
-            let resolverObject = {
-                requestId: requestId,
-                resolver: resolver
-            } as IResolver
-
-            setResolvers([ ...resolvers, resolverObject ])
-        })
-
-        return promise
-    }
+    value.queryIndicatorsLength = (query?: IQuantaQuery[]) =>
+        queryIndicatorsLength(query, resolvers, setResolvers)
 
     useEffect(() => {
         //set up the listener

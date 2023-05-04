@@ -30,6 +30,24 @@ interface IQueryIndicator {
     query: IQuantaQuery[]
 }
 
+interface IQueryIndicatorId {
+    requestId: string,
+    indicatorId: string
+}
+
+interface IQueryIndicatorPage {
+    requestId: string,
+    page: number,
+    pageLength: number
+}
+
+interface IQueryPagedIndicators {
+    requestId: string,
+    page: number,
+    pageLength: number,
+    query: IQuantaQuery[]
+}
+
 interface IResolverResponse {
     requestId?: string,
     requestData?: string
@@ -37,6 +55,14 @@ interface IResolverResponse {
 
 interface IIndicatorResponse {
     indicators?: IQuantaIndicator[]
+}
+
+interface IIndicatorResponse {
+    indicator?: IQuantaIndicator
+}
+
+interface IIndicatorLengthResponse {
+    length?: number
 }
 
 export type {
@@ -47,5 +73,9 @@ export type {
     IEmitSelectedMessage,
     IQueryIndicator,
     IResolverResponse,
-    IIndicatorResponse
+    IIndicatorResponse,
+    IQueryIndicatorId,
+    IQueryIndicatorPage,
+    IQueryPagedIndicators,
+    IIndicatorLengthResponse
 }
