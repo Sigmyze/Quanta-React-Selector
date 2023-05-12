@@ -111,11 +111,13 @@ const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {
                 switch (func) {
                     case "pipeline":
                         let parsedData: IPipelineMessage = JSON.parse(parsedMessage.data)
-                        let analyses = parsedData.analysis
-                        let nAnalyzedState = {} as IAnalyzedState
-
-                        for(let i = 0; i < analyses.length; i++) {
-                            let analysis = analyses[i]
+                        let analysess = parsedData.analysis
+                        let nAnalyzedState = analysis
+                        if(nAnalyzedState === null)
+                            nAnalyzedState = {}
+                        
+                        for(let i = 0; i < analysess.length; i++) {
+                            let analysis = analysess[i]
                             let objectId = analysis.objectId
                             let analyzedData = {} as IAnalyzedData
 
@@ -143,15 +145,13 @@ const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {
                     default:
                         break
                 }
-            } catch {
-                console.debug('[selector]: skipping msg')
-            }
+            } catch { }
         }
 
         window.addEventListener("message", handler)
 
         return () => window.removeEventListener("message", handler)
-    }, [])
+    })
     
     return (
         <>

@@ -1,6 +1,6 @@
 {
 	"name": "quanta-selector-react",
-	"version": "1.2.3",
+	"version": "1.2.9",
 	"license": "MIT",
 	"source": "./index.ts",
 	"main": "dist/main.js",
