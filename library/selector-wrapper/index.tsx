@@ -14,6 +14,9 @@ interface ISelectorWrapperProps {
 
 const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {    
     const [analysis, setAnalysis] = useState<IAnalyzedState | null>(null)
+    const [analysisUpdated, setAnalysisUpdated] = useState(false)
+    const toggleAnalysisUpdated = () => setAnalysisUpdated(!analysisUpdated)
+
     const [resolvers, setResolvers] = useState<IResolver[]>([])
     const [receivedResponses, setReceivedResponses] = useState<IResolverResponse[]>([])
 
@@ -48,6 +51,7 @@ const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {
         if(resolver === undefined)
             return
 
+        console.log(value)
         resolver.resolver(value)
     }
 
@@ -82,6 +86,7 @@ const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {
     
     let value = {} as ISelectorWrapperState
     value.analysis = analysis
+    value.analysisUpdated = analysisUpdated
 
     value.pingMessage = pingMessage
     value.setSchema = setSchema
@@ -134,12 +139,14 @@ const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {
                         }
 
                         setAnalysis({ ...nAnalyzedState })
+                        toggleAnalysisUpdated()
                         break
                     case "queryIndicator":
                         let queryParsed: IResolverResponse = JSON.parse(parsedMessage.data)
                         if(queryParsed.requestData === undefined || queryParsed.requestId === undefined)
                             return
 
+                        console.log(queryParsed)
                         addResponse(queryParsed)
                         break
                     default:
@@ -151,7 +158,7 @@ const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {
         window.addEventListener("message", handler)
 
         return () => window.removeEventListener("message", handler)
-    })
+    }, [])
     
     return (
         <>

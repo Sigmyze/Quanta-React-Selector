@@ -4,6 +4,7 @@ import { ISchemaItem } from './messages'
 
 interface ISelectorWrapperState {
     analysis: IAnalyzedState | null,
+    analysisUpdated: boolean,
 
     pingMessage: (sourceId: string) => void,
     setSchema: (name: string, items: ISchemaItem[]) => void,

@@ -2,6 +2,10 @@ import { useContext } from "react"
 import { SelectorContextData } from "./selector-wrapper"
 import { ISelectorWrapperState } from "../types"
 
+const objectCopy = (object: any): any => {
+    return JSON.parse(JSON.stringify(object))
+}
+
 const usePingMessage = () => {
     const { pingMessage } = useContext(SelectorContextData) as ISelectorWrapperState
     return pingMessage
@@ -39,8 +43,13 @@ const useIndicatorsLength = () => {
 
 const useAnalysis = () => {
     const { analysis } = useContext(SelectorContextData) as ISelectorWrapperState
-    return analysis
+    return objectCopy(analysis)
 }
+
+const useAnalysisUpdated = () => {
+    const { analysisUpdated } = useContext(SelectorContextData) as ISelectorWrapperState
+    return analysisUpdated
+}   
 
 export { 
     usePingMessage,
@@ -50,5 +59,6 @@ export {
     useAnalysis,
     useQueryIndicatorId,
     useIndicatorsPaged,
-    useIndicatorsLength
+    useIndicatorsLength,
+    useAnalysisUpdated
 }
