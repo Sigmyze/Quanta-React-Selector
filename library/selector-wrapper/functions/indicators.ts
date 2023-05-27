@@ -12,8 +12,7 @@ import {
 
 const queryIndicatorsWrapper = (
     query: IQuantaQuery[], 
-    resolvers: IResolver[],
-    setResolvers: (value: React.SetStateAction<IResolver[]>) => void
+    addResolver: (resolver: IResolver) => void
 ) => {
     const promise = new Promise<IQuantaIndicator[] | undefined>((resolve, reject) => {
         let requestId = queryIndicators(query)
@@ -21,6 +20,8 @@ const queryIndicatorsWrapper = (
         const resolver = (val: string) => {
             try {
                 let indicatorResponse: IIndicatorResponse = JSON.parse(val)
+                console.debug(`[Selector]: Recv ${indicatorResponse.indicators?.length} indicators`)
+                clearTimeout(expire)
                 resolve(indicatorResponse.indicators)
             } catch {
                 console.debug("[Selector] Error Processing Indicator Response")
@@ -28,17 +29,18 @@ const queryIndicatorsWrapper = (
             }
         }
 
-        setTimeout(() => {
-            console.debug("[Selector] Query Request Timed out")
+        let expire = setTimeout(() => {
+            console.debug("[Selector] Wrapper Query Request Timed out")
             resolve(undefined)
-        }, 1000 * 20)
+            clearTimeout(expire)
+        }, 1000 * 10)
 
         let resolverObject = {
             requestId: requestId,
             resolver: resolver
         } as IResolver
 
-        setResolvers([ ...resolvers, resolverObject ])
+        addResolver(resolverObject)
     })
 
     return promise
@@ -46,13 +48,14 @@ const queryIndicatorsWrapper = (
 
 const queryIndicatorsId = (
     indicatorId: string,
-    resolvers: IResolver[],
-    setResolvers: (value: React.SetStateAction<IResolver[]>) => void
+    addResolver: (resolver: IResolver) => void
 ) => {
     const promise = new Promise<IQuantaIndicator | undefined>((resolve, reject) => {
         const resolver = (val: string) => {
             try {
                 let indicatorResponse: IIndicatorResponse = JSON.parse(val)
+                console.debug(`[Selector]: Recv indicator with id ${indicatorResponse.indicator?.indicatorId}`)
+                clearTimeout(expire)
                 resolve(indicatorResponse.indicator)
             } catch {
                 console.debug("[Selector] Error Processing Indicator Response")
@@ -60,10 +63,11 @@ const queryIndicatorsId = (
             }
         }
 
-        setTimeout(() => {
-            console.debug("[Selector] Query Request Timed out")
+        let expire = setTimeout(() => {
+            console.debug("[Selector] Id Query Request Timed out")
             resolve(undefined)
-        }, 1000 * 20)
+            clearTimeout(expire)
+        }, 1000 * 10)
 
         let requestId = queryFrameIndicatorsId(indicatorId)
         let resolverObject = {
@@ -71,7 +75,7 @@ const queryIndicatorsId = (
             resolver: resolver
         } as IResolver
 
-        setResolvers([ ...resolvers, resolverObject ])
+        addResolver(resolverObject)
     })
 
     return promise
@@ -81,13 +85,14 @@ const queryIndicatorsPage = (
     page: number,
     pageLength: number,
     query: IQuantaQuery[] | undefined,
-    resolvers: IResolver[],
-    setResolvers: (value: React.SetStateAction<IResolver[]>) => void
+    addResolver: (resolver: IResolver) => void
 ) => {
     const promise = new Promise<IQuantaIndicator[] | undefined>((resolve, reject) => {
         const resolver = (val: string) => {
             try {
                 let indicatorResponse: IIndicatorResponse = JSON.parse(val)
+                console.debug(`[Selector]: Recv ${indicatorResponse.indicators?.length} indicators`)
+                clearTimeout(expire)
                 resolve(indicatorResponse.indicators)
             } catch {
                 console.debug("[Selector] Error Processing Indicator Response")
@@ -95,10 +100,11 @@ const queryIndicatorsPage = (
             }
         }
 
-        setTimeout(() => {
-            console.debug("[Selector] Query Request Timed out")
+        let expire = setTimeout(() => {
+            console.debug("[Selector] Page Query Request Timed out")
             resolve(undefined)
-        }, 1000 * 20)
+            clearTimeout(expire)
+        }, 1000 * 10)
 
         let requestId: string | undefined = undefined
         if(query === undefined)
@@ -111,21 +117,19 @@ const queryIndicatorsPage = (
             resolver: resolver
         } as IResolver
 
-        setResolvers([ ...resolvers, resolverObject ])
+        addResolver(resolverObject)
     })
 
     return promise
 }
 
-const queryIndicatorsLength = (
-    query: IQuantaQuery[] | undefined,
-    resolvers: IResolver[],
-    setResolvers: (value: React.SetStateAction<IResolver[]>) => void
-) => {
+const queryIndicatorsLength = ( query: IQuantaQuery[] | undefined, addResolver: (resolver: IResolver) => void ) => {
     const promise = new Promise<number | undefined>((resolve, reject) => {
         const resolver = (val: string) => {
             try {
                 let indicatorResponse: IIndicatorLengthResponse = JSON.parse(val)
+                console.debug(`[Selector]: Recv len ${indicatorResponse.length}`)
+                clearTimeout(expire)
                 resolve(indicatorResponse.length)
             } catch {
                 console.debug("[Selector] Error Processing Indicator Response")
@@ -133,10 +137,11 @@ const queryIndicatorsLength = (
             }
         }
 
-        setTimeout(() => {
-            console.debug("[Selector] Query Request Timed out")
+        let expire = setTimeout(() => {
+            console.debug("[Selector] Length Query Request Timed out")
             resolve(undefined)
-        }, 1000 * 20)
+            clearTimeout(expire)
+        }, 1000 * 10)
 
         let requestId: string | undefined = undefined
         if(query === undefined)
@@ -149,7 +154,7 @@ const queryIndicatorsLength = (
             resolver: resolver
         } as IResolver
 
-        setResolvers([ ...resolvers, resolverObject ])
+        addResolver(resolverObject)
     })
 
     return promise

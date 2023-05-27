@@ -12,77 +12,33 @@ interface ISelectorWrapperProps {
     children: React.ReactNode
 }
 
+interface IMessage {
+    requestId: string, 
+    requestData: string
+}
+
 const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {    
     const [analysis, setAnalysis] = useState<IAnalyzedState | null>(null)
     const [analysisUpdated, setAnalysisUpdated] = useState(false)
     const toggleAnalysisUpdated = () => setAnalysisUpdated(!analysisUpdated)
 
     const [resolvers, setResolvers] = useState<IResolver[]>([])
-    const [receivedResponses, setReceivedResponses] = useState<IResolverResponse[]>([])
 
-    const [receivedResponse, setReceivedResponse] = useState(false)
-    const toggleReceivedResponse = () => setReceivedResponse(!receivedResponse)
+    const addResolver = (resolver: IResolver) => {
+        let nResolvers = resolvers
+        nResolvers.push(resolver)
 
-    const addResponse = (resp: IResolverResponse) => {
-        let nReceivedResponses = receivedResponses
-        nReceivedResponses.push(resp)
-        setReceivedResponses([ ...nReceivedResponses ])
-        toggleReceivedResponse()
-    }
-
-    const inResolvers = (requestId: string) => {
-        for(let i = 0; i < resolvers.length; i++) {
-            let resolver = resolvers[i]
-            if(resolver.requestId === requestId)
-                return true
-        }
-        
-        return false
-    }
-
-    const resolveHandler = (requestId: string, value: string) => {
-        let resolver: IResolver | undefined = undefined
-        for(let i = 0; i < resolvers.length; i++) {
-            let resolver_ = resolvers[i]
-            if(resolver_.requestId === requestId)
-                resolver = resolver_
-        }
-
-        if(resolver === undefined)
-            return
-
-        console.log(value)
-        resolver.resolver(value)
-    }
-
-    useEffect(() => {
-        let nResponses = [] as IResolverResponse[]
-        let resolverId = [] as string[]
-        let nResolvers = [] as IResolver[]
-
-        for(let i = 0; i < receivedResponses.length; i++) {
-            let response = receivedResponses[i]
-            if(inResolvers(response.requestId!)) {
-                resolveHandler(response.requestId!, response.requestData!)
-                resolverId.push(response.requestId!)
-
-                continue
-            }
-
-            nResponses.push(response)
-        }
-
-        for(let i = 0; i < resolvers.length; i++) {
-            let resolver = resolvers[i]
-            if(resolverId.includes(resolver.requestId))
-                continue
-
-            nResolvers.push(resolver)
-        }
-
-        setReceivedResponses([ ...nResponses ])
         setResolvers([ ...nResolvers ])
-    }, [receivedResponse])
+    }
+    
+    const handleMessage = (message: IMessage) => {
+        for(let i = 0; i < resolvers.length; i++) {
+            let resolver = resolvers[i]
+            console.log(message.requestData)
+            if(resolver.requestId === message.requestId)
+                resolver.resolver(message.requestData)
+        }
+    }
     
     let value = {} as ISelectorWrapperState
     value.analysis = analysis
@@ -93,16 +49,16 @@ const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {
     value.setSelected = setSelected
 
     value.queryIndicators = (query: IQuantaQuery[]) => 
-        queryIndicatorsWrapper(query, resolvers, setResolvers)
+        queryIndicatorsWrapper(query, addResolver)
 
     value.queryIndicatorId = (indicatorId: string) =>
-        queryIndicatorsId(indicatorId, resolvers, setResolvers)
+        queryIndicatorsId(indicatorId, addResolver)
 
     value.queryIndicatorsPaged = (page: number, pageLength: number, query?: IQuantaQuery[]) =>
-        queryIndicatorsPage(page, pageLength, query, resolvers, setResolvers)
+        queryIndicatorsPage(page, pageLength, query, addResolver)
 
     value.queryIndicatorsLength = (query?: IQuantaQuery[]) =>
-        queryIndicatorsLength(query, resolvers, setResolvers)
+        queryIndicatorsLength(query, addResolver)
 
     useEffect(() => {
         //set up the listener
@@ -142,12 +98,11 @@ const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {
                         toggleAnalysisUpdated()
                         break
                     case "queryIndicator":
-                        let queryParsed: IResolverResponse = JSON.parse(parsedMessage.data)
-                        if(queryParsed.requestData === undefined || queryParsed.requestId === undefined)
+                        if(parsedMessage.data === undefined)
                             return
 
-                        console.log(queryParsed)
-                        addResponse(queryParsed)
+                        let parsed: IMessage = JSON.parse(parsedMessage.data)
+                        handleMessage(parsed)
                         break
                     default:
                         break
