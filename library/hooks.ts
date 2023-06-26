@@ -51,6 +51,16 @@ const useAnalysisUpdated = () => {
     return analysisUpdated
 }   
 
+const useFormatString = () => {
+    const { formatString } = useContext(SelectorContextData) as ISelectorWrapperState
+    return formatString
+}
+
+const useFormatStringRAW = () => {
+    const { formatStringRAW } = useContext(SelectorContextData) as ISelectorWrapperState
+    return formatStringRAW
+}
+
 export { 
     usePingMessage,
     useSetSchema,
@@ -60,5 +70,7 @@ export {
     useQueryIndicatorId,
     useIndicatorsPaged,
     useIndicatorsLength,
-    useAnalysisUpdated
+    useAnalysisUpdated,
+    useFormatString,
+    useFormatStringRAW
 }

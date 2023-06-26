@@ -61,6 +61,10 @@ interface IIndicatorResponse {
     indicator?: IQuantaIndicator
 }
 
+interface ISelectIndicatorResponse {
+    selected?: boolean
+}
+
 interface IIndicatorLengthResponse {
     length?: number
 }
@@ -77,5 +81,6 @@ export type {
     IQueryIndicatorId,
     IQueryIndicatorPage,
     IQueryPagedIndicators,
-    IIndicatorLengthResponse
+    IIndicatorLengthResponse,
+    ISelectIndicatorResponse
 }

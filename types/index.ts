@@ -17,7 +17,11 @@ interface ISelectorWrapperState {
     //queries a paged set of indicators
     queryIndicatorsPaged: (page: number, pageLength: number, query?: IQuantaQuery[]) => Promise<IQuantaIndicator[] | undefined>,
     //queries the length of indicators
-    queryIndicatorsLength: (query?: IQuantaQuery[]) => Promise<number | undefined>
+    queryIndicatorsLength: (query?: IQuantaQuery[]) => Promise<number | undefined>,
+    //formats a string from a formatter provided in analysis object
+    formatString: (key: string, indicator: IQuantaIndicator) => string | undefined,
+    //formats a string provided by the user
+    formatStringRAW: (val: string, indicator: IQuantaIndicator) => string | undefined
 }
 
 export type { ISelectorWrapperState }

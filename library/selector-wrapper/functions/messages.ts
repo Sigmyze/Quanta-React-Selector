@@ -1,5 +1,4 @@
 import { IQuantaQuery } from "../types"
-import { v4 } from 'uuid'
 import { 
     IEmitSelectedMessage, 
     IFrameMessage, 
@@ -65,12 +64,12 @@ const constructDateQuery = (field: string, value: number) => {
     return query
 }
 
-const queryIndicators = (query: IQuantaQuery[]) => {
+const queryIndicators = (request_id: string, query: IQuantaQuery[]) => {
     let frameMessage = {} as IFrameMessage
     frameMessage.function = "query_indicator"
 
     let queryData = {} as IQueryIndicator
-    queryData.requestId = v4()
+    queryData.requestId = request_id
     queryData.query = query
     frameMessage.data = JSON.stringify(queryData)
 
@@ -78,12 +77,12 @@ const queryIndicators = (query: IQuantaQuery[]) => {
     return queryData.requestId
 }
 
-const queryIndicatorsPageFrame = (page: number, pageLength: number) => {
+const queryIndicatorsPageFrame = (requestId: string, page: number, pageLength: number) => {
     let frameMessage = {} as IFrameMessage
     frameMessage.function = "query_indicator_page"
 
     let queryData = {} as IQueryIndicatorPage
-    queryData.requestId = v4()
+    queryData.requestId = requestId
     queryData.page = page
     queryData.pageLength = pageLength
     frameMessage.data = JSON.stringify(queryData)
@@ -92,12 +91,12 @@ const queryIndicatorsPageFrame = (page: number, pageLength: number) => {
     return queryData.requestId
 }
 
-const queryIndicatorsLengthFrame = (query: IQuantaQuery[]) => {
+const queryIndicatorsLengthFrame = (requestId: string, query: IQuantaQuery[]) => {
     let frameMessage = {} as IFrameMessage
     frameMessage.function = "query_indicator_length"
 
     let queryData = {} as IQueryIndicator
-    queryData.requestId = v4()
+    queryData.requestId = requestId
     queryData.query = query
     frameMessage.data = JSON.stringify(queryData)
 
@@ -105,24 +104,24 @@ const queryIndicatorsLengthFrame = (query: IQuantaQuery[]) => {
     return queryData.requestId
 }
 
-const indicatorsLengthFrame = () => {
+const indicatorsLengthFrame = (requestId: string) => {
     let frameMessage = {} as IFrameMessage
     frameMessage.function = "indicators_length"
 
     let queryData = {} as IQueryIndicator
-    queryData.requestId = v4()
+    queryData.requestId = requestId
     frameMessage.data = JSON.stringify(queryData)
 
     window.top?.postMessage(JSON.stringify(frameMessage), '*')
     return queryData.requestId
 }
 
-const pagedSelectedIndicatorsFrame = (query: IQuantaQuery[], page: number, pageLength: number) => {
+const pagedSelectedIndicatorsFrame = (requestId: string, query: IQuantaQuery[], page: number, pageLength: number) => {
     let frameMessage = {} as IFrameMessage
     frameMessage.function = "query_paged_indicators"
 
     let queryData = {} as IQueryPagedIndicators
-    queryData.requestId = v4()
+    queryData.requestId = requestId
     queryData.page = page
     queryData.pageLength = pageLength
     queryData.query = query
@@ -132,12 +131,12 @@ const pagedSelectedIndicatorsFrame = (query: IQuantaQuery[], page: number, pageL
     return queryData.requestId
 }
 
-const queryFrameIndicatorsId = (indicatorId: string) => {
+const queryFrameIndicatorsId = (requestId: string, indicatorId: string) => {
     let frameMessage = {} as IFrameMessage
     frameMessage.function = "query_indicator_by_id"
 
     let queryData = {} as IQueryIndicatorId
-    queryData.requestId = v4()
+    queryData.requestId = requestId
     queryData.indicatorId = indicatorId
     frameMessage.data = JSON.stringify(queryData)
 

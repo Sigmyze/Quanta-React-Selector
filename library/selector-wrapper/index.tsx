@@ -1,10 +1,17 @@
-import React, { useEffect } from 'react'
-import { IResolverResponse, ISelectorWrapperState } from '../../types'
+import React, { useCallback, useEffect, useRef } from 'react'
+import { ISelectorWrapperState } from '../../types'
 import { useState } from 'react'
 import { pingMessage, setSchema, setSelected } from './functions/messages'
-import { IIFrameMessage, IPipelineMessage , IQuantaQuery } from './types'
+import { IIFrameMessage, IPipelineMessage , IQuantaIndicator, IQuantaQuery } from './types'
 import { IAnalyzedData, IAnalyzedState, IResolver } from './types/state'
-import { queryIndicatorsId, queryIndicatorsLength, queryIndicatorsPage, queryIndicatorsWrapper } from './functions'
+import { 
+    formatString, 
+    formatStringRAW, 
+    queryIndicatorsId, 
+    queryIndicatorsLength, 
+    queryIndicatorsPage, 
+    queryIndicatorsWrapper 
+} from './functions'
 
 const SelectorContextData = React.createContext<ISelectorWrapperState | null>(null)
 
@@ -22,22 +29,33 @@ const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {
     const [analysisUpdated, setAnalysisUpdated] = useState(false)
     const toggleAnalysisUpdated = () => setAnalysisUpdated(!analysisUpdated)
 
-    const [resolvers, setResolvers] = useState<IResolver[]>([])
+    const refsolvers = useRef<IResolver[] | null>(null)
 
     const addResolver = (resolver: IResolver) => {
-        let nResolvers = resolvers
-        nResolvers.push(resolver)
+        if(refsolvers.current === null)
+            return
 
-        setResolvers([ ...nResolvers ])
+        let nResolvers = refsolvers.current
+        nResolvers.push(resolver)
+        refsolvers.current = nResolvers
     }
     
     const handleMessage = (message: IMessage) => {
-        for(let i = 0; i < resolvers.length; i++) {
-            let resolver = resolvers[i]
-            console.log(message.requestData)
-            if(resolver.requestId === message.requestId)
+        if(refsolvers.current === null)
+            return
+
+        let nResolvers = [] as IResolver[]
+        for(let i = 0; i < refsolvers.current.length; i++) {
+            let resolver = refsolvers.current[i]
+            if(resolver.requestId === message.requestId) {
                 resolver.resolver(message.requestData)
+                continue
+            }
+
+            nResolvers.push(resolver)
         }
+
+        refsolvers.current = nResolvers
     }
     
     let value = {} as ISelectorWrapperState
@@ -48,20 +66,41 @@ const SelectorWrapper: React.FC<ISelectorWrapperProps> = ({ children }) => {
     value.setSchema = setSchema
     value.setSelected = setSelected
 
-    value.queryIndicators = (query: IQuantaQuery[]) => 
-        queryIndicatorsWrapper(query, addResolver)
+    //setup the function callbacks for better performanec
+    const queryIndicatorsCallback = useCallback((query: IQuantaQuery[]) => {
+        return queryIndicatorsWrapper(query, addResolver)
+    }, [])
 
-    value.queryIndicatorId = (indicatorId: string) =>
-        queryIndicatorsId(indicatorId, addResolver)
+    const queryIndicatorIdCallback = useCallback((indicatorId: string) => {
+        return queryIndicatorsId(indicatorId, addResolver)
+    }, [])
 
-    value.queryIndicatorsPaged = (page: number, pageLength: number, query?: IQuantaQuery[]) =>
-        queryIndicatorsPage(page, pageLength, query, addResolver)
+    const queryIndicatorsPageCallback = useCallback((page: number, pageLength: number, query?: IQuantaQuery[]) => {
+        return queryIndicatorsPage(page, pageLength, query, addResolver)
+    }, [])
 
-    value.queryIndicatorsLength = (query?: IQuantaQuery[]) =>
-        queryIndicatorsLength(query, addResolver)
+    const queryIndicatorsLengthCallback = useCallback((query?: IQuantaQuery[]) => {
+        return queryIndicatorsLength(query, addResolver)
+    }, [])
+
+    const formatStringCallback = useCallback((key: string, indicator: IQuantaIndicator) => {
+        return formatString(key, indicator, analysis)
+    }, [analysis])
+
+    const formatStringRAWCalback = useCallback((val: string, indicator: IQuantaIndicator) => {
+        return formatStringRAW(val, indicator)
+    }, [])
+
+    value.queryIndicators = queryIndicatorsCallback
+    value.queryIndicatorId = queryIndicatorIdCallback
+    value.queryIndicatorsPaged = queryIndicatorsPageCallback
+    value.queryIndicatorsLength = queryIndicatorsLengthCallback
+    value.formatString = formatStringCallback
+    value.formatStringRAW = formatStringRAWCalback
 
     useEffect(() => {
         //set up the listener
+        refsolvers.current = []
         const handler = (event: MessageEvent<any>) => {
             try {
                 let parsedMessage: IIFrameMessage = JSON.parse(event.data)
